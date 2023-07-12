@@ -1,0 +1,50 @@
+version: '3'
+services:
+  wazuh:
+    image: wazuh/wazuh:latest
+    ports:
+      - "55000:55000/tcp"
+      - "55001:55001/tcp"
+      - "1514:1514/tcp"
+      - "1515:1515/udp"
+    volumes:
+      - ./wazuh_data:/var/ossec/data
+      - ./wazuh_log:/var/ossec/logs
+      - ./wazuh_config:/var/ossec/etc
+
+  thehive:
+    image: thehiveproject/thehive4:latest
+    ports:
+      - "9000:9000/tcp"
+    volumes:
+      - ./thehive_data:/opt/thehive/data
+
+  cortex:
+    image: thehiveproject/cortex:latest
+    ports:
+      - "9001:9001/tcp"
+    volumes:
+      - ./cortex_data:/opt/cortex/data
+
+  snort:
+    image: snort/snort:latest
+    network_mode: "host"
+    volumes:
+      - ./snort_config:/etc/snort
+      - ./snort_rules:/etc/snort/rules
+      - ./snort_logs:/var/log/snort
+
+  suricata:
+    image: suricata/suricata:latest
+    network_mode: "host"
+    volumes:
+      - ./suricata_config:/etc/suricata
+      - ./suricata_rules:/etc/suricata/rules
+      - ./suricata_logs:/var/log/suricata
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000/tcp"
+    volumes:
+      - ./grafana_data:/var/lib/grafana
